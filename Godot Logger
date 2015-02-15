@@ -1,0 +1,133 @@
+# GodotLogger by Spooner
+# ======================
+#
+# logger.gd is a simple logging system. It allows for more formatted logging,
+# logging levels and logging to a file.
+#
+# Installation
+# ------------
+#
+#     Place this file somewhere (for example, 'res://root/logger.gd')
+#     and autoload it (in project settings) to make it into a globally accessible singleton.
+#
+# Logger levels
+# -------------
+#     Level.DEBUG - Show all log messages
+#     Level.INFO - Show info(), warning(), error() and critical() log messages
+#     Level.WARNING - Show warning(), error() and critical() log messages
+#     Level.ERROR - Show error() and critical() log messages
+#     Level.CRITICAL - Show only critical() log messages
+#
+# Examples
+# --------
+#
+#     Getting a reference to the global logger object with:
+#         var logger = get_node('/root/logger')
+# 
+#     Setting the logger level (default is Level.INFO):
+#         logger.level = logger.Level.DEBUG
+#
+#     Setting whether to print() message (default is to print):
+#         logger.print_std = false
+#
+#     Logging to a file (set to 'null' to close the file):
+#         logger.filename = 'user://log.txt'
+#        
+#     Logging messages of various types (will use var2str() to output any non-string being logged):
+#         logger.info("Creating a new fish object")
+#         logger.debug([my_vector3, my_vector2, my_list])
+#         logger.warning("Tried to take over the moon!")
+#
+# TODO
+# ----
+#
+#    Log current run time (when/if that is added to GDScript)
+#
+
+extends Node
+
+class Level:
+    const DEBUG = 0
+    const INFO = 1
+    const WARNING = 2
+    const ERROR = 3
+    const CRITICAL = 4
+
+const STRING_TYPE = typeof("") # TODO: Is there a nicer way to avoid creating a string every time we compare an object?
+
+var _file
+
+# Print to stdout?
+var print_stdout = true setget set_print_stdout, get_print_stdout
+func get_print_stdout():
+    return print_stdout
+func set_print_stdout(value):
+    assert(value in [true, false])
+    print_stdout = value
+
+# Logging level.
+var level = Level.INFO setget set_level, get_level
+func get_level():
+    return level
+func set_level(value):
+    assert(level in [Level.DEBUG, Level.INFO, Level.WARNING, Level.ERROR, Level.CRITICAL])
+    level = value
+
+# Logging to file.
+var file = null
+var filename = null setget set_filename, get_filename
+func get_filename():
+    return filename
+func set_filename(value):
+    if value == filename:
+        return
+
+    if file != null:
+        file.close()
+
+    if value == null:
+        file = null
+        filename = null
+    else:
+        var file_ob = File.new()
+        assert(file_ob.file_exists(value))
+        file = file_ob.open(value, File.WRITE)
+        filename = value
+
+func debug(data):
+    '''Debugging message'''
+    if level == Level.DEBUG:
+        _write('DEBUG:', data)
+
+func info(data):
+    '''Informational message'''
+    if level <= Level.INFO:
+        _write('INFO:', data)
+
+
+func warning(data):
+    '''Warning message'''
+    if level <= Level.WARNING:
+        _write('WARN:', data)
+
+func error(data):
+    '''Error message'''
+    if level <= Level.ERROR:
+        _write('ERROR:', data)
+
+func critical(data):
+    '''Critical error message'''
+    _write('CRIT:', data)
+
+func _write(type, data):
+    '''Actually write out the message string'''
+    if typeof(data) != STRING_TYPE:
+        data = var2str(data)
+
+    var message = '%5s %s' % [type, data]
+
+    if print_stdout:
+        print(message)
+
+    if file != null:
+        file.store_line(message)
