@@ -55,6 +55,7 @@
 #         logger.error("File doesn't exist, so I can't go on")
 #         logger.critical("Divided by an ocelot error! Segfault immanent")
 #
+# License: MIT
 
 extends Node
 
