@@ -46,7 +46,7 @@
 #         logger.time_format_func = funcref(my_instance, "time_formatter")
 #
 #     Logging to a file (set to 'null' to close the file):
-#         logger.filename = 'user://log.txt'
+#         logger.file_name = 'user://log.txt'
 #        
 #     Logging messages of various types (will use var2str() to output any non-string being logged):
 #         logger.info("Creating a new fish object")
@@ -92,22 +92,22 @@ func set_level(value):
 
 # Logging to file.
 var file = null
-var filename = null setget set_filename, get_filename
+var file_name = null setget set_filename, get_filename
 func get_filename():
-    return filename
+    return file_name
 func set_filename(value):
     if file != null:
-        info("Stopped logging to file: %s" % filename)
+        info("Stopped logging to file: %s" % file_name)
         file.close()
 
     if value != null:
         file = File.new()
-        filename = value
-        file.open(filename, File.WRITE)
-        info("Started logging to file: %s" % filename)
+        file_name = value
+        file.open(file_name, File.WRITE)
+        info("Started logging to file: %s" % file_name)
     else:
         file = null
-        filename = null  
+        file_name = null  
 
 # Log timer
 var time_format_func = funcref(self, "format_time_datetime") setget set_time_format_func
@@ -151,7 +151,7 @@ func _format_time():
 
     return "%02d:%02d:%02d.%03d" % [time["hour"], time["minute"], time["second"], ms]
 
-func _format_elapsed(time):
+func _format_elapsed():
     """Not used directly, but might come in useful"""
     var time = OS.get_ticks_msec()
     var ms = time % 1000
