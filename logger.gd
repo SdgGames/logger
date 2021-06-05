@@ -200,7 +200,10 @@ func _write(type, data):
 	var message = '%s%5s %s' % [time_format_func.call_func(), type, data]
 
 	if print_stdout:
-		print(message)
-
+		if $"/root".has_node("Console"):
+			Console.write_line(message)
+		else:
+			print(message)
+		
 	if file != null:
 		file.store_line(message)
