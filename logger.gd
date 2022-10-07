@@ -104,9 +104,8 @@ var file_name = null :
 			file.close()
 
 		if value != null:
-			file = File.new()
 			file_name = value
-			file.open(file_name, File.WRITE)
+			file = FileAccess.open(file_name, FileAccess.WRITE)
 			info("Started logging to file: %s" % file_name)
 		else:
 			file = null
