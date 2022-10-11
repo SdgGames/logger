@@ -101,8 +101,7 @@ var file_name = null :
 	set(value):
 		if file != null:
 			info("Stopped logging to file: %s" % file_name)
-			file.close()
-
+		
 		if value != null:
 			file_name = value
 			file = FileAccess.open(file_name, FileAccess.WRITE)
